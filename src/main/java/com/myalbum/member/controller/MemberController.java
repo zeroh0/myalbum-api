@@ -1,5 +1,6 @@
 package com.myalbum.member.controller;
 
+import com.myalbum.common.response.ApiResponse;
 import com.myalbum.member.controller.dto.LoginRequest;
 import com.myalbum.member.controller.dto.SignUpRequest;
 import com.myalbum.member.controller.dto.SignUpResponse;
@@ -7,6 +8,7 @@ import com.myalbum.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,8 +39,8 @@ public class MemberController {
      * @return 회원 가입 응답
      */
     @PostMapping("/signup")
-    public SignUpResponse signUp(@RequestBody final SignUpRequest signUpRequest) {
-        return memberService.signUp(signUpRequest.toServiceDto());
+    public ResponseEntity<ApiResponse<SignUpResponse>> signUp(@RequestBody final SignUpRequest signUpRequest) {
+        return ApiResponse.ok(memberService.signUp(signUpRequest.toServiceDto()));
     }
 
     /**
@@ -50,7 +52,7 @@ public class MemberController {
      * @return
      */
     @PostMapping("/login")
-    public String login(
+    public ResponseEntity<ApiResponse<Void>> login(
             @RequestBody final LoginRequest loginRequest,
             HttpServletRequest request,
             HttpServletResponse response
@@ -67,7 +69,7 @@ public class MemberController {
         securityContextHolderStrategy.setContext(securityContext);
         securityContextRepository.saveContext(securityContext, request, response);
 
-        return "로그인 성공";
+        return ApiResponse.ok();
     }
 
 }
