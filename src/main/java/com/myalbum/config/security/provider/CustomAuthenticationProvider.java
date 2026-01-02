@@ -1,16 +1,16 @@
 package com.myalbum.config.security.provider;
 
+import com.myalbum.common.error.exception.AppException;
 import com.myalbum.config.security.domain.PrincipalDetails;
 import com.myalbum.member.entity.Member;
+import com.myalbum.member.exception.MemberError;
 import com.myalbum.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -37,11 +37,11 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         
         // 이메일로 회원 조회 -> 존재하지 않는 회원 예외 처리
         Member member = memberRepository.findByEmailAndProviderIsNull(email)
-                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> AppException.exception(MemberError.MEMBER_NOT_FOUND));
 
         // 비밀번호 일치 여부 확인 -> 일치하지 않을 경우 예외 처리
         if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+            AppException.exception(MemberError.PASSWORD_NOT_MATCH);
         }
 
         return new UsernamePasswordAuthenticationToken(new PrincipalDetails(member), null, List.of());

@@ -1,8 +1,10 @@
 package com.myalbum.member.service;
 
+import com.myalbum.common.error.exception.AppException;
 import com.myalbum.member.controller.dto.SignUpResponse;
 import com.myalbum.member.entity.Member;
 import com.myalbum.member.enums.MemberStatus;
+import com.myalbum.member.exception.MemberError;
 import com.myalbum.member.repository.MemberRepository;
 import com.myalbum.member.service.dto.SignUpDto;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +27,12 @@ public class MemberService {
     public SignUpResponse signUp(final SignUpDto signUpDto) {
         // 일반회원 이메일 중복 검사
         if (memberRepository.existsByEmailAndProviderIsNull(signUpDto.getEmail())) {
-            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+            AppException.exception(MemberError.DUPLICATE_EMAIL);
         }
 
         // 사용자명 중복 검사
         if (memberRepository.existsByUsername(signUpDto.getUsername())) {
-            throw new IllegalArgumentException("이미 사용 중인 사용자명입니다.");
+            AppException.exception(MemberError.DUPLICATE_USERNAME);
         }
 
         // 회원 정보 저장
