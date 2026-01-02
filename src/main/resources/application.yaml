@@ -2,6 +2,13 @@ server:
   port: 9000
 
 spring:
+
+  messages:
+    encoding: utf-8
+    cache-duration: 3600
+    fallback-to-system-locale: true
+    basename: i18n/member/messages
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/myalbum
