@@ -1,5 +1,6 @@
-package com.myalbum.common.response;
+package com.myalbum.config.message;
 
+import com.myalbum.common.response.AppError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;

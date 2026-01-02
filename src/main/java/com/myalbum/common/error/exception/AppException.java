@@ -1,7 +1,7 @@
 package com.myalbum.common.error.exception;
 
 import com.myalbum.common.response.AppError;
-import com.myalbum.common.response.MessageResolver;
+import com.myalbum.config.message.MessageResolver;
 import lombok.Getter;
 
 @Getter
