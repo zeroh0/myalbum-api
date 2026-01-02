@@ -34,6 +34,10 @@ public class ApiResponse<T> {
         this.fieldErrors = fieldErrors;
     }
 
+    public static <T> ResponseEntity<ApiResponse<T>> ok() {
+        return ResponseEntity.ok(new ApiResponse<>(true, HttpStatus.OK.value(), "success", null));
+    }
+
     public static <T> ResponseEntity<ApiResponse<T>> ok(T data) {
         return ResponseEntity.ok(new ApiResponse<>(true, HttpStatus.OK.value(), "success", data));
     }
