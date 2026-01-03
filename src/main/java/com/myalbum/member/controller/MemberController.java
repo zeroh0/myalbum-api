@@ -7,6 +7,7 @@ import com.myalbum.member.controller.dto.SignUpResponse;
 import com.myalbum.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,7 +40,7 @@ public class MemberController {
      * @return 회원 가입 응답
      */
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<SignUpResponse>> signUp(@RequestBody final SignUpRequest signUpRequest) {
+    public ResponseEntity<ApiResponse<SignUpResponse>> signUp(@Valid @RequestBody final SignUpRequest signUpRequest) {
         return ApiResponse.ok(memberService.signUp(signUpRequest.toServiceDto()));
     }
 
@@ -53,7 +54,7 @@ public class MemberController {
      */
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<Void>> login(
-            @RequestBody final LoginRequest loginRequest,
+            @Valid @RequestBody final LoginRequest loginRequest,
             HttpServletRequest request,
             HttpServletResponse response
     ) {

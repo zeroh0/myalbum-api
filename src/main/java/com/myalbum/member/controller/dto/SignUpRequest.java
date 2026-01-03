@@ -1,7 +1,7 @@
 package com.myalbum.member.controller.dto;
 
+import com.myalbum.common.valid.RequiredField;
 import com.myalbum.member.service.dto.SignUpDto;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,16 +9,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SignUpRequest {
 
-    @NotBlank(message = "이메일은 필수 입력 항목입니다.")
+    @RequiredField(params = "member.field.email")
     private String email;
 
-    @NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
+    @RequiredField(params = "member.field.password")
     private String password;
 
-    @NotBlank(message = "비밀번호 확인은 필수 입력 항목입니다.")
+    @RequiredField(params = "member.field.passwordConfirm")
     private String passwordConfirm;
 
-    @NotBlank(message = "사용자명은 필수 입력 항목입니다.")
+    @RequiredField(params = "member.field.username")
     private String username;
 
     public SignUpDto toServiceDto() {
