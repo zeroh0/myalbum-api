@@ -7,7 +7,8 @@ spring:
     encoding: utf-8
     cache-duration: 3600
     fallback-to-system-locale: true
-    basename: i18n/member/messages
+    basename: i18n/common/messages,
+      i18n/member/messages
 
   datasource:
     driver-class-name: org.postgresql.Driver
