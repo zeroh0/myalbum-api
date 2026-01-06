@@ -1,6 +1,8 @@
 package com.myalbum.member.entity;
 
+import com.myalbum.common.error.exception.AppException;
 import com.myalbum.member.enums.MemberStatus;
+import com.myalbum.member.exception.MemberError;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 회원 엔티티
@@ -65,6 +68,26 @@ public class Member {
      */
     public boolean isPending() {
         return MemberStatus.PENDING.getCode().equalsIgnoreCase(this.status);
+    }
+
+    /**
+     * 회원 상태를 ACTIVE 로 변경
+     */
+    public void activate() {
+        this.status = MemberStatus.ACTIVE.getCode();
+    }
+
+    /**
+     * PENDING 상태의 회원 username 설정 및 상태를 ACTIVE 로 변경
+     *
+     * @param username 설정할 사용자명
+     */
+    public void completeOnboarding(String username) {
+        if (Objects.equals(MemberStatus.ACTIVE.getCode(), this.status)) {
+            AppException.exception(MemberError.ALREADY_COMPLETED_ONBOARDING);
+        }
+        this.activate();
+        this.username = username;
     }
 
 }

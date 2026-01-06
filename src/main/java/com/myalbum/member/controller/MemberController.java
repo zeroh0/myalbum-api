@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,6 +69,26 @@ public class MemberController {
         TokenResponse tokenResponse = authService.generateToken(member.getId());
 
         return ApiResponse.ok(new LoginResponse(tokenResponse, LoginMember.fromEntity(member)));
+    }
+
+    /**
+     * PENDING 상태 회원 추가입력사항 작업
+     *
+     * @param principalDetails
+     * @param memberOnboardingRequest
+     * @return
+     */
+    @PostMapping("/onboarding")
+    public ResponseEntity<ApiResponse<Void>> onboarding(
+            @AuthenticationPrincipal final PrincipalDetails principalDetails,
+            @Valid @RequestBody final MemberOnboardingRequest memberOnboardingRequest
+    ) {
+        Member member = principalDetails.getMember();
+
+        // PENDING 상태의 회원 username 설정 및 상태를 ACTIVE로 변경
+        memberService.completeOnboarding(member.getId(), memberOnboardingRequest.getUsername());
+
+        return ApiResponse.ok();
     }
 
 }

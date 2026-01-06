@@ -72,4 +72,27 @@ public class MemberService {
         return SignUpResponse.fromEntity(savedMember);
     }
 
+    /**
+     * PENDING 상태의 회원 username 설정 및 상태를 ACTIVE로 변경 (소셜로그인 시 username 미설정 상태로 가입됨)
+     *
+     * @param id       회원 pk
+     * @param username 설정할 사용자명
+     */
+    public void completeOnboarding(Long id, String username) {
+        // 회원 조회
+        Member member = findById(id);
+
+        // 사용자명 중복 검사
+        boolean existsByUsername = memberRepository.existsByUsername(username);
+        if (existsByUsername) {
+            AppException.exception(MemberError.DUPLICATE_USERNAME);
+        }
+
+        // 회원 상태 ACTIVE 변경 및 사용자명 설정
+        member.completeOnboarding(username);
+
+        // 변경된 회원 정보 저장
+        memberRepository.save(member);
+    }
+
 }
