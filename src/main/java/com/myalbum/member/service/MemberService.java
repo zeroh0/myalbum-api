@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -39,6 +41,13 @@ public class MemberService {
      * @return 회원 가입 응답
      */
     public SignUpResponse signUp(final SignUpDto signUpDto) {
+        // 비밀번호, 비밀번호 확인 일치 여부 검사
+        String password = signUpDto.getPassword();
+        String passwordConfirm = signUpDto.getPasswordConfirm();
+        if (!Objects.equals(password, passwordConfirm)) {
+            AppException.exception(MemberError.PASSWORD_CONFIRM_NOT_MATCH);
+        }
+
         // 일반회원 이메일 중복 검사
         if (memberRepository.existsByEmailAndProviderIsNull(signUpDto.getEmail())) {
             AppException.exception(MemberError.DUPLICATE_EMAIL);

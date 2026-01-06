@@ -25,6 +25,7 @@ public class SignUpRequest {
         return SignUpDto.builder()
                 .email(this.email)
                 .password(this.password)
+                .passwordConfirm(this.passwordConfirm)
                 .username(this.username)
                 .build();
     }
