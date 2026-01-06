@@ -2,6 +2,7 @@ package com.myalbum.config.security;
 
 import com.myalbum.config.security.handler.CustomAccessDeniedHandler;
 import com.myalbum.config.security.handler.CustomAuthenticationEntryPoint;
+import com.myalbum.config.security.jwt.JwtAuthenticationFilter;
 import com.myalbum.config.security.oauth2.handler.OAuth2LoginFailureHandler;
 import com.myalbum.config.security.oauth2.handler.OAuth2LoginSuccessHandler;
 import com.myalbum.config.security.oauth2.service.CustomOAuth2UserService;
@@ -15,9 +16,9 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
@@ -32,16 +33,11 @@ public class SecurityConfig {
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    @Bean
-    public SecurityContextRepository securityContextRepository() {
-        // 세션 기반 SecurityContextRepository 설정
-        return new HttpSessionSecurityContextRepository();
     }
 
     @Bean
@@ -52,7 +48,8 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
-                .securityContext(context -> context.securityContextRepository(securityContextRepository()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authenticationProvider(customAuthenticationProvider)
                 .oauth2Login(oauth ->
                         oauth.userInfoEndpoint(endpoint -> endpoint.userService(customOAuth2UserService))
@@ -76,6 +73,10 @@ public class SecurityConfig {
             "/",
             "/api/member/signup",
             "/api/member/login",
+            "/api/auth/refresh",
+            "/login/oauth2/code/**",
+            "/oauth-test.html",
+            "/signup/onboarding.html",
     };
 
 }

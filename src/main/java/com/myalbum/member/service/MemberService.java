@@ -21,6 +21,18 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     /**
+     * pk로 회원 조회
+     *
+     * @param id 회원 pk
+     * @return 회원 엔티티
+     */
+    @Transactional(readOnly = true)
+    public Member findById(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> AppException.exception(MemberError.MEMBER_NOT_FOUND));
+    }
+
+    /**
      * 일반 회원 가입
      *
      * @param signUpDto 회원 가입 정보

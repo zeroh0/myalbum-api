@@ -1,22 +1,23 @@
 package com.myalbum.member.controller;
 
+import com.myalbum.auth.controller.dto.LoginMember;
+import com.myalbum.auth.controller.dto.LoginResponse;
+import com.myalbum.auth.controller.dto.TokenResponse;
+import com.myalbum.auth.service.AuthService;
 import com.myalbum.common.response.ApiResponse;
+import com.myalbum.config.security.domain.PrincipalDetails;
 import com.myalbum.member.controller.dto.LoginRequest;
 import com.myalbum.member.controller.dto.SignUpRequest;
 import com.myalbum.member.controller.dto.SignUpResponse;
+import com.myalbum.member.entity.Member;
 import com.myalbum.member.service.MemberService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextHolderStrategy;
-import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,11 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class MemberController {
 
-    private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
-
+    private final AuthService authService;
     private final MemberService memberService;
     private final AuthenticationManager authenticationManager;
-    private final SecurityContextRepository securityContextRepository;
 
     /**
      * 회원 가입
@@ -48,29 +47,27 @@ public class MemberController {
      * 로그인
      *
      * @param loginRequest 로그인 요청
-     * @param request
-     * @param response
-     * @return
+     * @return JWT 토큰 응답
      */
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<Void>> login(
-            @Valid @RequestBody final LoginRequest loginRequest,
-            HttpServletRequest request,
-            HttpServletResponse response
+    @Transactional
+    public ResponseEntity<ApiResponse<LoginResponse>> login(
+            @Valid @RequestBody final LoginRequest loginRequest
     ) {
         // 인증 토큰 생성
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
 
         // 인증 수행
-        Authentication authenticate = authenticationManager.authenticate(authToken);
+        Authentication authentication = authenticationManager.authenticate(authToken);
 
-        // SecurityContext에 인증 정보 저장
-        SecurityContext securityContext = securityContextHolderStrategy.getContext();
-        securityContext.setAuthentication(authenticate);
-        securityContextHolderStrategy.setContext(securityContext);
-        securityContextRepository.saveContext(securityContext, request, response);
+        // 인증된 회원 정보 가져오기
+        Member member = ((PrincipalDetails) authentication.getPrincipal()).getMember();
 
-        return ApiResponse.ok();
+        // JWT 토큰 생성
+        TokenResponse tokenResponse = authService.generateToken(member.getId());
+
+        return ApiResponse.ok(new LoginResponse(tokenResponse, LoginMember.fromEntity(member)));
     }
 
 }
