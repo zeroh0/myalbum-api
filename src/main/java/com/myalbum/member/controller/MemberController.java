@@ -24,10 +24,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/member")
 @RestController
@@ -103,6 +100,22 @@ public class MemberController {
         memberService.completeOnboarding(member.getId(), memberOnboardingRequest.getUsername());
 
         return ApiResponse.ok();
+    }
+
+    /**
+     * 현재 로그인한 회원 정보 조회
+     *
+     * @param principalDetails 인증된 회원 정보
+     * @return 현재 로그인한 회원 정보
+     */
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<LoginMember>> getCurrentMember(
+            @AuthenticationPrincipal final PrincipalDetails principalDetails
+    ) {
+        Member loggedInMember = principalDetails.getMember();
+        Member member = memberService.findById(loggedInMember.getId());
+
+        return ApiResponse.ok(LoginMember.fromEntity(member));
     }
 
 }

@@ -71,6 +71,7 @@ public class SecurityConfig {
 
     public final String[] PERMIT_URL_ARRAY = {
             "/",
+            "/api/member/me",
             "/api/member/signup",
             "/api/member/login",
             "/api/auth/refresh",
