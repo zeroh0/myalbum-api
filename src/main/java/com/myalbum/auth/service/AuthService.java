@@ -1,6 +1,6 @@
 package com.myalbum.auth.service;
 
-import com.myalbum.auth.controller.dto.TokenResponse;
+import com.myalbum.auth.controller.dto.JwtToken;
 import com.myalbum.auth.entity.RefreshToken;
 import com.myalbum.auth.exception.AuthError;
 import com.myalbum.auth.repository.RefreshTokenRepository;
@@ -28,7 +28,7 @@ public class AuthService {
      * @param memberId 회원 pk
      * @return TokenResponse
      */
-    public TokenResponse generateToken(final Long memberId) {
+    public JwtToken generateToken(final Long memberId) {
         String accessToken = jwtTokenProvider.createAccessToken(memberId);
         String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
 
@@ -42,7 +42,7 @@ public class AuthService {
                 )
         );
 
-        return TokenResponse.of(
+        return JwtToken.of(
                 accessToken,
                 refreshToken,
                 jwtTokenProvider.getAccessTokenExpiration()
@@ -53,9 +53,9 @@ public class AuthService {
      * Refresh Token으로 새로운 Access Token과 Refresh Token 발급
      *
      * @param refreshToken 기존 Refresh Token
-     * @return 새로운 TokenResponse
+     * @return 새로운 JwtToken
      */
-    public TokenResponse refreshToken(final String refreshToken) {
+    public JwtToken refreshToken(final String refreshToken) {
         // Refresh Token 유효성 검증
         if (!jwtTokenProvider.validateToken(refreshToken)) {
             AppException.exception(AuthError.INVALID_REFRESH_TOKEN);

@@ -1,18 +1,23 @@
 package com.myalbum.member.controller;
 
+import com.myalbum.auth.controller.dto.JwtToken;
 import com.myalbum.auth.controller.dto.LoginMember;
 import com.myalbum.auth.controller.dto.LoginResponse;
 import com.myalbum.auth.controller.dto.TokenResponse;
 import com.myalbum.auth.service.AuthService;
 import com.myalbum.common.response.ApiResponse;
+import com.myalbum.config.security.cookie.RefreshTokenCookieManager;
 import com.myalbum.config.security.domain.PrincipalDetails;
 import com.myalbum.member.controller.dto.LoginRequest;
 import com.myalbum.member.controller.dto.SignUpRequest;
 import com.myalbum.member.controller.dto.SignUpResponse;
 import com.myalbum.member.entity.Member;
 import com.myalbum.member.service.MemberService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,6 +36,7 @@ public class MemberController {
 
     private final AuthService authService;
     private final MemberService memberService;
+    private final RefreshTokenCookieManager refreshTokenCookieManager;
     private final AuthenticationManager authenticationManager;
 
     /**
@@ -53,7 +59,8 @@ public class MemberController {
     @PostMapping("/login")
     @Transactional
     public ResponseEntity<ApiResponse<LoginResponse>> login(
-            @Valid @RequestBody final LoginRequest loginRequest
+            @Valid @RequestBody final LoginRequest loginRequest,
+            HttpServletResponse response
     ) {
         // 인증 토큰 생성
         UsernamePasswordAuthenticationToken authToken =
@@ -66,7 +73,14 @@ public class MemberController {
         Member member = ((PrincipalDetails) authentication.getPrincipal()).getMember();
 
         // JWT 토큰 생성
-        TokenResponse tokenResponse = authService.generateToken(member.getId());
+        JwtToken jwtToken = authService.generateToken(member.getId());
+
+        // 응답용 토큰 정보 생성
+        TokenResponse tokenResponse = new TokenResponse(jwtToken.getAccessToken(), jwtToken.getAccessTokenExpiresIn(), jwtToken.getTokenType());
+
+        // Refresh Token을 HttpOnly 쿠키로 설정
+        ResponseCookie refreshTokenCookie = refreshTokenCookieManager.createRefreshTokenCookie(jwtToken.getRefreshToken());
+        response.setHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
         return ApiResponse.ok(new LoginResponse(tokenResponse, LoginMember.fromEntity(member)));
     }

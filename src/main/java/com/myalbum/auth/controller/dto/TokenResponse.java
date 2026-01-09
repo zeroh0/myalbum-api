@@ -7,16 +7,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public class TokenResponse {
 
-    private final String accessToken;
+    private String accessToken;
 
-    private final String refreshToken;
+    private Long accessTokenExpiresIn;
 
-    private final Long accessTokenExpiresIn;
-
-    private final String tokenType;
-
-    public static TokenResponse of(String accessToken, String refreshToken, Long expiresIn) {
-        return new TokenResponse(accessToken, refreshToken, expiresIn, "Bearer");
-    }
+    private String tokenType;
 
 }
