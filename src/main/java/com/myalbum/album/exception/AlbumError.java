@@ -1,0 +1,18 @@
+package com.myalbum.album.exception;
+
+import com.myalbum.common.response.AppError;
+import lombok.Getter;
+
+@Getter
+public enum AlbumError implements AppError {
+    ;
+
+    private final String errorCode;
+    private final String errorKey;
+
+    AlbumError(String errorCode, String errorKey) {
+        this.errorCode = errorCode;
+        this.errorKey = errorKey;
+    }
+
+}
