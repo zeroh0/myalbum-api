@@ -81,4 +81,37 @@ public class AlbumService {
         album.delete();
     }
 
+    /**
+     * 사용자 앨범 수정
+     *
+     * @param albumId          앨범 ID
+     * @param saveAlbumRequest 앨범 수정 요청 정보
+     * @param file             업로드할 파일
+     * @param memberId         사용자 ID
+     * @return 수정된 앨범 정보
+     */
+    public SaveAlbumResponse updateAlbum(Long albumId, SaveAlbumRequest saveAlbumRequest, MultipartFile file, Long memberId) {
+        Album album = albumRepository.findByIdAndMemberId(albumId, memberId)
+                .orElseThrow(() -> AppException.exception(AlbumError.ALBUM_NOT_FOUND));
+
+        String storedFileUrl = null;
+        if (file != null) {
+            // 수정된 파일이 있는 경우
+            storedFileUrl = fileStorage.storeFile(file);
+        }
+
+        try {
+            // 수정
+            album.update(saveAlbumRequest.getTitle(), saveAlbumRequest.getDescription(), storedFileUrl);
+
+            return SaveAlbumResponse.fromAlbumEntity(album);
+        } catch (Exception exception) {
+            // 저장 실패 시 파일 삭제
+            if (storedFileUrl != null) {
+                fileStorage.delete(storedFileUrl);
+            }
+            throw exception;
+        }
+    }
+
 }

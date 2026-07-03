@@ -61,4 +61,17 @@ public class Album {
         this.deletedAt = LocalDateTime.now();
     }
 
+    public void update(String title, String description, String coverImageUrl) {
+        if (title != null) {
+            this.title = title;
+        }
+        if (description != null) {
+            this.description = description;
+        }
+        if (coverImageUrl != null) {
+            this.coverImageUrl = coverImageUrl;
+        }
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }
