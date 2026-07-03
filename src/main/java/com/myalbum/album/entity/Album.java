@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -41,9 +43,11 @@ public class Album {
     @Column(comment = "상태", columnDefinition = "VARCHAR(20)")
     private String status;
 
+    @CreationTimestamp
     @Column(comment = "생성일시 ", columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(comment = "수정일시 ", columnDefinition = "TIMESTAMP")
     private LocalDateTime updatedAt;
 
