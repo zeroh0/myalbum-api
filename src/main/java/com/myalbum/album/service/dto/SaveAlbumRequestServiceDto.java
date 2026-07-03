@@ -1,6 +1,7 @@
 package com.myalbum.album.service.dto;
 
 import com.myalbum.album.entity.Album;
+import com.myalbum.album.enums.AlbumStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ public class SaveAlbumRequestServiceDto {
 
     private String coverImageUrl;
 
-    private String status;
+    private AlbumStatus status;
 
     private Long memberId;
 
@@ -25,7 +26,7 @@ public class SaveAlbumRequestServiceDto {
                 .title(saveAlbumRequestServiceDto.getTitle())
                 .description(saveAlbumRequestServiceDto.getDescription())
                 .coverImageUrl(saveAlbumRequestServiceDto.getCoverImageUrl())
-                .status("PUBLIC")
+                .status(AlbumStatus.PUBLIC)
                 .memberId(saveAlbumRequestServiceDto.getMemberId())
                 .build();
     }

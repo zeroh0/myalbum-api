@@ -1,6 +1,7 @@
 package com.myalbum.album.service.dto;
 
 import com.myalbum.album.entity.Album;
+import com.myalbum.album.enums.AlbumStatus;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -8,7 +9,7 @@ import java.util.List;
 
 @Getter
 public class AlbumListResponse {
-    
+
     private Long id;
 
     private String title;
@@ -17,7 +18,7 @@ public class AlbumListResponse {
 
     private int viewCount;
 
-    private String status;
+    private AlbumStatus status;
 
     private LocalDateTime createdAt;
 
