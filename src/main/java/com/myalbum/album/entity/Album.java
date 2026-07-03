@@ -1,5 +1,6 @@
 package com.myalbum.album.entity;
 
+import com.myalbum.album.enums.AlbumStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,7 +42,8 @@ public class Album {
     private int viewCount;
 
     @Column(comment = "상태", columnDefinition = "VARCHAR(20)")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private AlbumStatus status;
 
     @CreationTimestamp
     @Column(comment = "생성일시 ", columnDefinition = "TIMESTAMP")
@@ -53,5 +55,10 @@ public class Album {
 
     @Column(comment = "삭제일시", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
+
+    public void delete() {
+        this.updatedAt = LocalDateTime.now();
+        this.deletedAt = LocalDateTime.now();
+    }
 
 }

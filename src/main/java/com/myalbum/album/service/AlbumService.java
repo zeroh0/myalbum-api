@@ -2,10 +2,12 @@ package com.myalbum.album.service;
 
 import com.myalbum.album.controller.dto.SaveAlbumRequest;
 import com.myalbum.album.entity.Album;
+import com.myalbum.album.exception.AlbumError;
 import com.myalbum.album.repository.AlbumRepository;
 import com.myalbum.album.service.dto.AlbumListResponse;
 import com.myalbum.album.service.dto.SaveAlbumRequestServiceDto;
 import com.myalbum.album.service.dto.SaveAlbumResponse;
+import com.myalbum.common.error.exception.AppException;
 import com.myalbum.common.storage.FileStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -64,6 +66,19 @@ public class AlbumService {
             fileStorage.delete(storedFileUrl);
             throw exception;
         }
+    }
+
+    /**
+     * 사용자 앨범 삭제
+     *
+     * @param albumId  앨범 ID
+     * @param memberId 사용자 ID
+     */
+    public void deleteAlbum(Long albumId, Long memberId) {
+        Album album = albumRepository.findByIdAndMemberId(albumId, memberId)
+                .orElseThrow(() -> AppException.exception(AlbumError.ALBUM_NOT_FOUND));
+
+        album.delete();
     }
 
 }

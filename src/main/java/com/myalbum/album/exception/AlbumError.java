@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public enum AlbumError implements AppError {
-    ;
+    ALBUM_NOT_FOUND("ALBUM_0001", "album.not.found");
 
     private final String errorCode;
     private final String errorKey;

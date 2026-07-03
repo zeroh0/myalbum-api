@@ -16,4 +16,13 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
      */
     Optional<List<Album>> findByMemberId(Long memberId);
 
+    /**
+     * 사용자 앨범 조회
+     *
+     * @param albumId  앨범 ID
+     * @param memberId 사용자 ID
+     * @return 사용자 앨범
+     */
+    Optional<Album> findByIdAndMemberId(Long albumId, Long memberId);
+
 }

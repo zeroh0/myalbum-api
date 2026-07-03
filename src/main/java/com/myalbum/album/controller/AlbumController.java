@@ -57,4 +57,23 @@ public class AlbumController {
         return ApiResponse.ok(saveAlbumResponse);
     }
 
+    /**
+     * 사용자 앨범 삭제
+     *
+     * @param albumId          앨범 ID
+     * @param principalDetails 인증된 사용자 정보
+     * @return 삭제 결과
+     */
+    @DeleteMapping("/{albumId}")
+    public ResponseEntity<ApiResponse<Void>> deleteAlbum(
+            @PathVariable Long albumId,
+            @AuthenticationPrincipal final PrincipalDetails principalDetails
+    ) {
+        Long memberId = principalDetails.getMember().getId();
+        // 사용자 앨범 삭제
+        albumService.deleteAlbum(albumId, memberId);
+
+        return ApiResponse.ok(null);
+    }
+
 }

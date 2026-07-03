@@ -8,7 +8,9 @@ spring:
     fallback-to-system-locale: true
     basename: i18n/common/messages,
       i18n/member/messages,
-      i18n/auth/messages
+      i18n/auth/messages,
+      i18n/storage/messages,
+      i18n/album/messages
 
   servlet:
     multipart:
