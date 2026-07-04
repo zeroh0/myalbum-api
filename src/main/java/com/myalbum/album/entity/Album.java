@@ -35,9 +35,6 @@ public class Album {
     @Column(comment = "앨범 설명", columnDefinition = "TEXT")
     private String description;
 
-    @Column(comment = "앨범 커버 이미지 URL", columnDefinition = "VARCHAR(255)")
-    private String coverImageUrl;
-
     @Column(comment = "조회수", columnDefinition = "INT")
     private int viewCount;
 
@@ -56,20 +53,23 @@ public class Album {
     @Column(comment = "삭제일시", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
+    @Column(comment = "앨범 커버 이미지 ID", nullable = false, columnDefinition = "BIGINT")
+    private Long imageId;
+
     public void delete() {
         this.updatedAt = LocalDateTime.now();
         this.deletedAt = LocalDateTime.now();
     }
 
-    public void update(String title, String description, String coverImageUrl) {
+    public void update(String title, String description, Long imageId) {
         if (title != null) {
             this.title = title;
         }
         if (description != null) {
             this.description = description;
         }
-        if (coverImageUrl != null) {
-            this.coverImageUrl = coverImageUrl;
+        if (imageId != null) {
+            this.imageId = imageId;
         }
         this.updatedAt = LocalDateTime.now();
     }

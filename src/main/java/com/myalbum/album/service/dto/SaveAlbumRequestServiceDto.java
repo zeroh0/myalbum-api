@@ -15,7 +15,7 @@ public class SaveAlbumRequestServiceDto {
 
     private String description;
 
-    private String coverImageUrl;
+    private Long imageId;
 
     private AlbumStatus status;
 
@@ -25,7 +25,7 @@ public class SaveAlbumRequestServiceDto {
         return Album.builder()
                 .title(saveAlbumRequestServiceDto.getTitle())
                 .description(saveAlbumRequestServiceDto.getDescription())
-                .coverImageUrl(saveAlbumRequestServiceDto.getCoverImageUrl())
+                .imageId(saveAlbumRequestServiceDto.getImageId())
                 .status(AlbumStatus.PUBLIC)
                 .memberId(saveAlbumRequestServiceDto.getMemberId())
                 .build();

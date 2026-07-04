@@ -1,5 +1,6 @@
 package com.myalbum.common.storage;
 
+import com.myalbum.common.storage.entity.UploadFile;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface FileStorage {
@@ -13,9 +14,9 @@ public interface FileStorage {
      * 파일 저장
      *
      * @param file 저장할 파일
-     * @return 저장된 파일의 경로
+     * @return 저장된 파일의 정보
      */
-    String storeFile(MultipartFile file);
+    UploadFile storeFile(MultipartFile file);
 
     /**
      * 파일 삭제

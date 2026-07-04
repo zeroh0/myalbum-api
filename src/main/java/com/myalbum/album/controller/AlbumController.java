@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -40,19 +39,17 @@ public class AlbumController {
      * 사용자 앨범 저장
      *
      * @param saveAlbumRequest 앨범 저장 요청 정보
-     * @param file             업로드할 파일
      * @param principalDetails 인증된 사용자 정보
      * @return 저장된 앨범 정보
      */
     @PostMapping
     public ResponseEntity<ApiResponse<SaveAlbumResponse>> saveAlbum(
-            @RequestPart(name = "saveAlbumRequest") SaveAlbumRequest saveAlbumRequest,
-            @RequestPart(name = "file", required = false) MultipartFile file,
+            @RequestBody SaveAlbumRequest saveAlbumRequest,
             @AuthenticationPrincipal final PrincipalDetails principalDetails
     ) {
         Long memberId = principalDetails.getMember().getId();
         // 사용자 앨범 저장
-        SaveAlbumResponse saveAlbumResponse = albumService.saveAlbum(saveAlbumRequest, file, memberId);
+        SaveAlbumResponse saveAlbumResponse = albumService.saveAlbum(saveAlbumRequest, memberId);
 
         return ApiResponse.ok(saveAlbumResponse);
     }
@@ -81,20 +78,18 @@ public class AlbumController {
      *
      * @param albumId          앨범 ID
      * @param saveAlbumRequest 앨범 수정 요청 정보
-     * @param file             업로드할 파일
      * @param principalDetails 인증된 사용자 정보
      * @return 수정된 앨범 정보
      */
     @PutMapping("/{albumId}")
     public ResponseEntity<ApiResponse<SaveAlbumResponse>> updateAlbum(
             @PathVariable Long albumId,
-            @RequestPart(name = "saveAlbumRequest") SaveAlbumRequest saveAlbumRequest,
-            @RequestPart(name = "file", required = false) MultipartFile file,
+            @RequestBody SaveAlbumRequest saveAlbumRequest,
             @AuthenticationPrincipal final PrincipalDetails principalDetails
     ) {
         Long memberId = principalDetails.getMember().getId();
         // 사용자 앨범 수정
-        SaveAlbumResponse saveAlbumResponse = albumService.updateAlbum(albumId, saveAlbumRequest, file, memberId);
+        SaveAlbumResponse saveAlbumResponse = albumService.updateAlbum(albumId, saveAlbumRequest, memberId);
 
         return ApiResponse.ok(saveAlbumResponse);
     }

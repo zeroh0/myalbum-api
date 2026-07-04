@@ -9,10 +9,11 @@ import com.myalbum.album.service.dto.SaveAlbumRequestServiceDto;
 import com.myalbum.album.service.dto.SaveAlbumResponse;
 import com.myalbum.common.error.exception.AppException;
 import com.myalbum.common.storage.FileStorage;
+import com.myalbum.common.storage.entity.UploadFile;
+import com.myalbum.common.storage.repository.UploadRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.List;
 public class AlbumService {
 
     private final FileStorage fileStorage;
+    private final UploadRepository uploadRepository;
     private final AlbumRepository albumRepository;
 
     /**
@@ -42,30 +44,33 @@ public class AlbumService {
      * 사용자 앨범 저장
      *
      * @param saveAlbumRequest 사용자 앨범 저장 요청
+     * @param memberId         사용자 ID
      * @return 저장된 앨범 정보
      */
-    public SaveAlbumResponse saveAlbum(SaveAlbumRequest saveAlbumRequest, MultipartFile file, Long memberId) {
-        // 물리적 저장
-        String storedFileUrl = fileStorage.storeFile(file);
+    public SaveAlbumResponse saveAlbum(SaveAlbumRequest saveAlbumRequest, Long memberId) {
+        // 업로드된 파일 가져오기
+        Long imageId;
+        imageId = saveAlbumRequest.getSaveUploadFileRequest().getId();
+        if (imageId != null) {
+            UploadFile uploadFile = uploadRepository.findById(imageId)
+                    .orElseThrow(() -> AppException.exception(AlbumError.UPLOAD_FILE_NOT_FOUND));
 
-        try {
-            // 논리적 저장
-            SaveAlbumRequestServiceDto saveAlbumRequestServiceDto = SaveAlbumRequestServiceDto.builder()
-                    .title(saveAlbumRequest.getTitle())
-                    .description(saveAlbumRequest.getDescription())
-                    .coverImageUrl(storedFileUrl)
-                    .memberId(memberId)
-                    .build();
-
-            Album album = SaveAlbumRequestServiceDto.toAlbumEntity(saveAlbumRequestServiceDto);
-            Album savedAlbum = albumRepository.save(album);
-
-            return SaveAlbumResponse.fromAlbumEntity(savedAlbum);
-        } catch (Exception exception) {
-            // 저장 실패 시 파일 삭제
-            fileStorage.delete(storedFileUrl);
-            throw exception;
+            // 파일 상태 값 변경 (CONFIRMED)
+            uploadFile.confirmed();
         }
+
+        // 앨범 저장
+        SaveAlbumRequestServiceDto saveAlbumRequestServiceDto = SaveAlbumRequestServiceDto.builder()
+                .title(saveAlbumRequest.getTitle())
+                .description(saveAlbumRequest.getDescription())
+                .imageId(imageId)
+                .memberId(memberId)
+                .build();
+
+        Album album = SaveAlbumRequestServiceDto.toAlbumEntity(saveAlbumRequestServiceDto);
+        Album savedAlbum = albumRepository.save(album);
+
+        return SaveAlbumResponse.fromAlbumEntity(savedAlbum);
     }
 
     /**
@@ -86,32 +91,29 @@ public class AlbumService {
      *
      * @param albumId          앨범 ID
      * @param saveAlbumRequest 앨범 수정 요청 정보
-     * @param file             업로드할 파일
      * @param memberId         사용자 ID
      * @return 수정된 앨범 정보
      */
-    public SaveAlbumResponse updateAlbum(Long albumId, SaveAlbumRequest saveAlbumRequest, MultipartFile file, Long memberId) {
+    public SaveAlbumResponse updateAlbum(Long albumId, SaveAlbumRequest saveAlbumRequest, Long memberId) {
+        // 앨범 조회
         Album album = albumRepository.findByIdAndMemberId(albumId, memberId)
                 .orElseThrow(() -> AppException.exception(AlbumError.ALBUM_NOT_FOUND));
 
-        String storedFileUrl = null;
-        if (file != null) {
-            // 수정된 파일이 있는 경우
-            storedFileUrl = fileStorage.storeFile(file);
+        // 수정 업로드 파일 조회
+        Long changedImageId;
+        changedImageId = saveAlbumRequest.getSaveUploadFileRequest().getId();
+        if (changedImageId != null) {
+            UploadFile uploadFile = uploadRepository.findById(changedImageId)
+                    .orElseThrow(() -> AppException.exception(AlbumError.UPLOAD_FILE_NOT_FOUND));
+
+            // 파일 상태 값 변경 (CONFIRMED)
+            uploadFile.confirmed();
         }
 
-        try {
-            // 수정
-            album.update(saveAlbumRequest.getTitle(), saveAlbumRequest.getDescription(), storedFileUrl);
+        // 앨범 수정
+        album.update(saveAlbumRequest.getTitle(), saveAlbumRequest.getDescription(), changedImageId);
 
-            return SaveAlbumResponse.fromAlbumEntity(album);
-        } catch (Exception exception) {
-            // 저장 실패 시 파일 삭제
-            if (storedFileUrl != null) {
-                fileStorage.delete(storedFileUrl);
-            }
-            throw exception;
-        }
+        return SaveAlbumResponse.fromAlbumEntity(album);
     }
 
 }

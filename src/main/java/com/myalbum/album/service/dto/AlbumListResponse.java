@@ -14,7 +14,7 @@ public class AlbumListResponse {
 
     private String title;
 
-    private String coverImageUrl;
+    private Long imageId;
 
     private int viewCount;
 
@@ -28,7 +28,7 @@ public class AlbumListResponse {
                     AlbumListResponse response = new AlbumListResponse();
                     response.id = album.getId();
                     response.title = album.getTitle();
-                    response.coverImageUrl = album.getCoverImageUrl();
+                    response.imageId = album.getImageId();
                     response.viewCount = album.getViewCount();
                     response.status = album.getStatus();
                     response.createdAt = album.getCreatedAt();

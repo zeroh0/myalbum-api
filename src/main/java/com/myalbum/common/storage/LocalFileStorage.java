@@ -1,6 +1,8 @@
 package com.myalbum.common.storage;
 
 import com.myalbum.common.error.exception.AppException;
+import com.myalbum.common.storage.entity.UploadFile;
+import com.myalbum.common.storage.enums.UploadFileStatus;
 import com.myalbum.common.storage.exception.StorageError;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +36,7 @@ public class LocalFileStorage implements FileStorage {
     }
 
     @Override
-    public String storeFile(MultipartFile file) {
+    public UploadFile storeFile(MultipartFile file) {
         try {
             if (file.isEmpty()) {
                 AppException.exception(StorageError.FILE_STORAGE_EMPTY_FILE);
@@ -59,8 +61,16 @@ public class LocalFileStorage implements FileStorage {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            // 저장된 파일의 상대 경로 반환
-            return this.rootLocation.relativize(destinationFile).toString();
+            String url = this.rootLocation.relativize(destinationFile).toString();
+
+            return UploadFile.builder()
+                    .url(url)
+                    .originFileName(file.getOriginalFilename())
+                    .saveFileName(storedFilename)
+                    .extension(extension)
+                    .size(file.getSize())
+                    .status(UploadFileStatus.UPLOADED)
+                    .build();
         } catch (Exception exception) {
             AppException.exception(StorageError.FAILED_STORE_FILE);
         }
@@ -91,7 +101,7 @@ public class LocalFileStorage implements FileStorage {
      */
     private String extractExtension(String filename) {
         int dotIndex = filename.lastIndexOf('.');
-        return (dotIndex >= 0) ? filename.substring(dotIndex) : "";
+        return (dotIndex >= 0) ? filename.substring(dotIndex + 1) : "";
     }
 
 }

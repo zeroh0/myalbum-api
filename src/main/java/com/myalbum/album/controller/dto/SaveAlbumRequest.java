@@ -9,4 +9,6 @@ public class SaveAlbumRequest {
 
     private String description;
 
+    private SaveUploadFileRequest saveUploadFileRequest;
+
 }
