@@ -3,6 +3,7 @@ package com.myalbum.album.controller;
 import com.myalbum.album.controller.dto.SaveAlbumRequest;
 import com.myalbum.album.service.AlbumService;
 import com.myalbum.album.service.dto.AlbumListResponse;
+import com.myalbum.album.service.dto.AlbumResponse;
 import com.myalbum.album.service.dto.SaveAlbumResponse;
 import com.myalbum.common.response.ApiResponse;
 import com.myalbum.config.security.domain.PrincipalDetails;
@@ -92,6 +93,25 @@ public class AlbumController {
         SaveAlbumResponse saveAlbumResponse = albumService.updateAlbum(albumId, saveAlbumRequest, memberId);
 
         return ApiResponse.ok(saveAlbumResponse);
+    }
+
+    /**
+     * 사용자 앨범 상세 조회
+     *
+     * @param albumId          앨범 ID
+     * @param principalDetails 인증된 사용자 정보
+     * @return 앨범 상세 정보
+     */
+    @GetMapping("/{albumId}")
+    public ResponseEntity<ApiResponse<AlbumResponse>> getAlbum(
+            @PathVariable Long albumId,
+            @AuthenticationPrincipal final PrincipalDetails principalDetails
+    ) {
+        Long memberId = principalDetails.getMember().getId();
+        // 사용자 앨범 조회
+        AlbumResponse albumResponse = albumService.getAlbum(albumId, memberId);
+
+        return ApiResponse.ok(albumResponse);
     }
 
 }

@@ -5,6 +5,7 @@ import com.myalbum.album.entity.Album;
 import com.myalbum.album.exception.AlbumError;
 import com.myalbum.album.repository.AlbumRepository;
 import com.myalbum.album.service.dto.AlbumListResponse;
+import com.myalbum.album.service.dto.AlbumResponse;
 import com.myalbum.album.service.dto.SaveAlbumRequestServiceDto;
 import com.myalbum.album.service.dto.SaveAlbumResponse;
 import com.myalbum.common.error.exception.AppException;
@@ -114,6 +115,21 @@ public class AlbumService {
         album.update(saveAlbumRequest.getTitle(), saveAlbumRequest.getDescription(), uploadFile);
 
         return SaveAlbumResponse.fromAlbumEntity(album);
+    }
+
+    /**
+     * 사용자 앨범 상세 조회
+     *
+     * @param albumId  앨범 ID
+     * @param memberId 사용자 ID
+     * @return 앨범 상세 정보회
+     */
+    @Transactional(readOnly = true)
+    public AlbumResponse getAlbum(Long albumId, Long memberId) {
+        Album album = albumRepository.findByIdAndMemberId(albumId, memberId)
+                .orElseThrow(() -> AppException.exception(AlbumError.ALBUM_NOT_FOUND));
+
+        return AlbumResponse.fromAlbumEntity(album);
     }
 
 }
