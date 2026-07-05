@@ -43,7 +43,7 @@ public class LocalFileStorage implements FileStorage {
             }
 
             String extension = extractExtension(file.getOriginalFilename());
-            String storedFilename = UUID.randomUUID() + extension;
+            String storedFilename = UUID.randomUUID() + "." + extension;
 
             // 오늘 날짜 기준으로 경로 생성
             Path dateDirectory = this.rootLocation.resolve(LocalDate.now().toString());
@@ -69,6 +69,48 @@ public class LocalFileStorage implements FileStorage {
                     .saveFileName(storedFilename)
                     .extension(extension)
                     .size(file.getSize())
+                    .status(UploadFileStatus.UPLOADED)
+                    .build();
+        } catch (Exception exception) {
+            AppException.exception(StorageError.FAILED_STORE_FILE);
+        }
+
+        return null;
+    }
+
+    @Override
+    public UploadFile storeFile(byte[] fileBytes, String originalFilename) {
+        try {
+            if (fileBytes.length == 0) {
+                AppException.exception(StorageError.FILE_STORAGE_EMPTY_FILE);
+            }
+
+            String extension = extractExtension(originalFilename);
+            String storedFilename = UUID.randomUUID() + "." + extension;
+
+            // 오늘 날짜 기준으로 경로 생성
+            Path dateDirectory = this.rootLocation.resolve(LocalDate.now().toString());
+            // 저장할 파일 경로 생성
+            Path destinationFile = dateDirectory.resolve(storedFilename).normalize().toAbsolutePath();
+
+            if (!destinationFile.startsWith(this.rootLocation)) {
+                AppException.exception(StorageError.FAILED_STORE_FILE);
+            }
+
+            // 오늘 날짜 기준 디렉토리 생성
+            Files.createDirectories(dateDirectory);
+
+            // 파일 저장
+            Files.write(destinationFile, fileBytes);
+
+            String url = this.rootLocation.relativize(destinationFile).toString();
+
+            return UploadFile.builder()
+                    .url(url)
+                    .originFileName(originalFilename)
+                    .saveFileName(storedFilename)
+                    .extension(extension)
+                    .size((long) fileBytes.length)
                     .status(UploadFileStatus.UPLOADED)
                     .build();
         } catch (Exception exception) {

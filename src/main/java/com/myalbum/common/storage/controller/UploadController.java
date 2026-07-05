@@ -3,12 +3,15 @@ package com.myalbum.common.storage.controller;
 import com.myalbum.common.response.ApiResponse;
 import com.myalbum.common.storage.entity.UploadFile;
 import com.myalbum.common.storage.service.UploadService;
+import com.myalbum.common.storage.service.dto.ImageUploadResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/upload")
@@ -29,6 +32,21 @@ public class UploadController {
     ) {
         UploadFile uploadFile = uploadService.saveFile(file);
         return ApiResponse.ok(uploadFile);
+    }
+
+    /**
+     * 이미지 파일을 받아서 썸네일용 이미지와 원본 이미지를 저장하고 업로드된 파일 정보를 반환하는 API
+     *
+     * @param files 업로드할 이미지 파일 목록
+     * @return 업로드된 이미지 파일 정보
+     */
+    @PostMapping("/images")
+    public ResponseEntity<ApiResponse<List<ImageUploadResponse>>> uploadImageFile(
+            List<MultipartFile> files
+    ) {
+        List<ImageUploadResponse> uploadFiles = uploadService.saveImageFiles(files);
+
+        return ApiResponse.ok(uploadFiles);
     }
 
 }
