@@ -2,6 +2,7 @@ package com.myalbum.album.service.dto;
 
 import com.myalbum.album.entity.Album;
 import com.myalbum.album.enums.AlbumStatus;
+import com.myalbum.common.storage.entity.UploadFile;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,7 @@ public class AlbumListResponse {
 
     private String title;
 
-    private Long imageId;
+    private UploadFile uploadFile;
 
     private int viewCount;
 
@@ -28,7 +29,7 @@ public class AlbumListResponse {
                     AlbumListResponse response = new AlbumListResponse();
                     response.id = album.getId();
                     response.title = album.getTitle();
-                    response.imageId = album.getImageId();
+                    response.uploadFile = album.getUploadFile();
                     response.viewCount = album.getViewCount();
                     response.status = album.getStatus();
                     response.createdAt = album.getCreatedAt();

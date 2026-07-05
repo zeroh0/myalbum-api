@@ -1,6 +1,7 @@
 package com.myalbum.album.entity;
 
 import com.myalbum.album.enums.AlbumStatus;
+import com.myalbum.common.storage.entity.UploadFile;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,23 +54,24 @@ public class Album {
     @Column(comment = "삭제일시", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
-    @Column(comment = "앨범 커버 이미지 ID", nullable = false, columnDefinition = "BIGINT")
-    private Long imageId;
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private UploadFile uploadFile;
 
     public void delete() {
         this.updatedAt = LocalDateTime.now();
         this.deletedAt = LocalDateTime.now();
     }
 
-    public void update(String title, String description, Long imageId) {
+    public void update(String title, String description, UploadFile uploadFile) {
         if (title != null) {
             this.title = title;
         }
         if (description != null) {
             this.description = description;
         }
-        if (imageId != null) {
-            this.imageId = imageId;
+        if (uploadFile != null) {
+            this.uploadFile = uploadFile;
         }
         this.updatedAt = LocalDateTime.now();
     }

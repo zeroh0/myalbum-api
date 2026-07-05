@@ -8,7 +8,6 @@ import com.myalbum.album.service.dto.AlbumListResponse;
 import com.myalbum.album.service.dto.SaveAlbumRequestServiceDto;
 import com.myalbum.album.service.dto.SaveAlbumResponse;
 import com.myalbum.common.error.exception.AppException;
-import com.myalbum.common.storage.FileStorage;
 import com.myalbum.common.storage.entity.UploadFile;
 import com.myalbum.common.storage.repository.UploadRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AlbumService {
 
-    private final FileStorage fileStorage;
     private final UploadRepository uploadRepository;
     private final AlbumRepository albumRepository;
 
@@ -51,8 +49,9 @@ public class AlbumService {
         // 업로드된 파일 가져오기
         Long imageId;
         imageId = saveAlbumRequest.getSaveUploadFileRequest().getId();
+        UploadFile uploadFile = null;
         if (imageId != null) {
-            UploadFile uploadFile = uploadRepository.findById(imageId)
+            uploadFile = uploadRepository.findById(imageId)
                     .orElseThrow(() -> AppException.exception(AlbumError.UPLOAD_FILE_NOT_FOUND));
 
             // 파일 상태 값 변경 (CONFIRMED)
@@ -63,7 +62,7 @@ public class AlbumService {
         SaveAlbumRequestServiceDto saveAlbumRequestServiceDto = SaveAlbumRequestServiceDto.builder()
                 .title(saveAlbumRequest.getTitle())
                 .description(saveAlbumRequest.getDescription())
-                .imageId(imageId)
+                .uploadFile(uploadFile)
                 .memberId(memberId)
                 .build();
 
@@ -102,8 +101,9 @@ public class AlbumService {
         // 수정 업로드 파일 조회
         Long changedImageId;
         changedImageId = saveAlbumRequest.getSaveUploadFileRequest().getId();
+        UploadFile uploadFile = null;
         if (changedImageId != null) {
-            UploadFile uploadFile = uploadRepository.findById(changedImageId)
+            uploadFile = uploadRepository.findById(changedImageId)
                     .orElseThrow(() -> AppException.exception(AlbumError.UPLOAD_FILE_NOT_FOUND));
 
             // 파일 상태 값 변경 (CONFIRMED)
@@ -111,7 +111,7 @@ public class AlbumService {
         }
 
         // 앨범 수정
-        album.update(saveAlbumRequest.getTitle(), saveAlbumRequest.getDescription(), changedImageId);
+        album.update(saveAlbumRequest.getTitle(), saveAlbumRequest.getDescription(), uploadFile);
 
         return SaveAlbumResponse.fromAlbumEntity(album);
     }
