@@ -83,6 +83,11 @@ public class AlbumService {
         Album album = albumRepository.findByIdAndMemberId(albumId, memberId)
                 .orElseThrow(() -> AppException.exception(AlbumError.ALBUM_NOT_FOUND));
 
+        // 앨범 소유자 확인
+        if (!album.getMemberId().equals(memberId)) {
+            throw AppException.exception(AlbumError.ALBUM_NOT_FOUND);
+        }
+
         album.delete();
     }
 
@@ -98,6 +103,11 @@ public class AlbumService {
         // 앨범 조회
         Album album = albumRepository.findByIdAndMemberId(albumId, memberId)
                 .orElseThrow(() -> AppException.exception(AlbumError.ALBUM_NOT_FOUND));
+
+        // 앨범 소유자 확인
+        if (!album.getMemberId().equals(memberId)) {
+            throw AppException.exception(AlbumError.ALBUM_NOT_FOUND);
+        }
 
         // 수정 업로드 파일 조회
         Long changedImageId;
