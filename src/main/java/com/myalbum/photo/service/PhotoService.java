@@ -63,16 +63,12 @@ public class PhotoService {
 
             Photo thumbnailPhoto = Photo.builder()
                     .albumId(targetAlbumId)
-                    .width(1000)
-                    .height(1000)
                     .displayOrder(displayOrder.get())
                     .uploadFile(thumbnailUploadFile)
                     .build();
 
             Photo imagePhoto = Photo.builder()
                     .albumId(targetAlbumId)
-                    .width(1000)
-                    .height(1000)
                     .displayOrder(displayOrder.getAndIncrement())
                     .uploadFile(imageUploadFile)
                     .build();

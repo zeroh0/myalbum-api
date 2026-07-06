@@ -2,12 +2,14 @@ package com.myalbum.common.storage.entity;
 
 import com.myalbum.common.storage.enums.UploadFileStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -39,6 +41,34 @@ public class UploadFile {
 
     @Column(comment = "파일 확장자", nullable = false, columnDefinition = "VARCHAR(10)")
     private String extension;
+
+    @Column(name = "width")
+    private Integer width;
+
+    @Column(name = "height")
+    private Integer height;
+
+    @Size(max = 100)
+    @Column(name = "camera_model", nullable = false, length = 100)
+    private String cameraModel;
+
+    @Size(max = 100)
+    @Column(name = "lens_model", nullable = false, length = 100)
+    private String lensModel;
+
+    @Column(name = "iso", nullable = false)
+    private Integer iso;
+
+    @Size(max = 10)
+    @Column(name = "aperture", nullable = false, length = 10)
+    private String aperture;
+
+    @Size(max = 20)
+    @Column(name = "shutter_speed", nullable = false, length = 20)
+    private String shutterSpeed;
+
+    @Column(name = "taken_at", nullable = false)
+    private LocalDate takenAt;
 
     @CreationTimestamp
     @Column(comment = "생성일", nullable = false, columnDefinition = "TIMESTAMP")
