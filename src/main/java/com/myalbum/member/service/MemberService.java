@@ -82,6 +82,11 @@ public class MemberService {
         // 회원 조회
         Member member = findById(id);
 
+        // ACTIVE 상태인 회원이 온보딩을 시도할 경우
+        if (member.isActive()) {
+            AppException.exception(MemberError.MEMBER_ALREADY_ACTIVE);
+        }
+
         // 사용자명 중복 검사
         boolean existsByUsername = memberRepository.existsByUsername(username);
         if (existsByUsername) {

@@ -71,6 +71,15 @@ public class Member {
     }
 
     /**
+     * 회원 상태가 ACTIVE 인지 여부 반환
+     *
+     * @return 회원 상태가 ACTIVE 이면 true, 아니면 false
+     */
+    public boolean isActive() {
+        return MemberStatus.ACTIVE.getCode().equalsIgnoreCase(this.status);
+    }
+
+    /**
      * 회원 상태를 ACTIVE 로 변경
      */
     public void activate() {

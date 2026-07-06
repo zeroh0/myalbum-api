@@ -10,7 +10,8 @@ public enum MemberError implements AppError {
     DUPLICATE_USERNAME("0003", "member.duplicate.username"),
     PASSWORD_NOT_MATCH("0004", "member.not.match.password"),
     PASSWORD_CONFIRM_NOT_MATCH("0005", "member.not.match.password.confirm"),
-    ALREADY_COMPLETED_ONBOARDING("0006", "member.already.completed.onboarding");
+    ALREADY_COMPLETED_ONBOARDING("0006", "member.already.completed.onboarding"),
+    MEMBER_ALREADY_ACTIVE("0007", "member.already.active");
 
     private final String errorCode;
     private final String errorKey;
