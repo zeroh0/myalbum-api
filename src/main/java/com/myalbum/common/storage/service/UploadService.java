@@ -6,6 +6,7 @@ import com.myalbum.common.storage.entity.UploadFile;
 import com.myalbum.common.storage.exception.StorageError;
 import com.myalbum.common.storage.repository.UploadRepository;
 import com.myalbum.common.storage.service.dto.ImageUploadResponse;
+import com.myalbum.common.storage.service.dto.PhotoResponse;
 import lombok.RequiredArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.stereotype.Service;
@@ -107,6 +108,19 @@ public class UploadService {
         );
 
         return uploadedFiles;
+    }
+
+    /**
+     * 사진 상세 조회
+     *
+     * @param imageId 이미지 ID
+     * @return 업로드된 이미지 파일 정보
+     */
+    public PhotoResponse getPhoto(Long imageId) {
+        UploadFile uploadFile = uploadRepository.findById(imageId)
+                .orElseThrow(() -> AppException.exception(StorageError.FILE_NOT_FOUND));
+
+        return PhotoResponse.fromUploadFileEntity(uploadFile);
     }
 
 }

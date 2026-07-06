@@ -4,11 +4,10 @@ import com.myalbum.common.response.ApiResponse;
 import com.myalbum.common.storage.entity.UploadFile;
 import com.myalbum.common.storage.service.UploadService;
 import com.myalbum.common.storage.service.dto.ImageUploadResponse;
+import com.myalbum.common.storage.service.dto.PhotoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -47,6 +46,21 @@ public class UploadController {
         List<ImageUploadResponse> uploadFiles = uploadService.saveImageFiles(files);
 
         return ApiResponse.ok(uploadFiles);
+    }
+
+    /**
+     * 사진 상세 조회
+     *
+     * @param imageId 사진 ID
+     * @return 사진 상세 정보
+     */
+    @GetMapping("/{imageId}")
+    public ResponseEntity<ApiResponse<PhotoResponse>> getPhoto(
+            @PathVariable Long imageId
+    ) {
+        PhotoResponse photoResponse = uploadService.getPhoto(imageId);
+
+        return ApiResponse.ok(photoResponse);
     }
 
 }

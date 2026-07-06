@@ -10,7 +10,8 @@ public enum StorageError implements AppError {
     FAILED_STORE_FILE("STORAGE_0003", "file.storage.failed.store"),
     FAILED_DELETE_FILE("STORAGE_0004", "file.storage.failed.delete"),
     IMAGE_READ_ERROR("STORAGE_0005", "image.read.error"),
-    UNSUPPORTED_IMAGE_FORMAT("STORAGE_0006", "unsupported.image.format");
+    UNSUPPORTED_IMAGE_FORMAT("STORAGE_0006", "unsupported.image.format"),
+    FILE_NOT_FOUND("STORAGE_0007", "file.not.found");
 
     private final String errorCode;
     private final String errorKey;
