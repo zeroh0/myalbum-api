@@ -79,6 +79,7 @@ public class SecurityConfig {
             "/login/oauth2/code/**",
             "/oauth-test.html",
             "/signup/onboarding.html",
+            "/resource/**"
     };
 
 }
