@@ -1,5 +1,6 @@
 package com.myalbum.common.error;
 
+import com.myalbum.auth.exception.AuthError;
 import com.myalbum.common.error.exception.AppException;
 import com.myalbum.common.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiResponse<Void>> handleAppException(AppException e) {
+        if (isUnauthenticatedError(e.getErrorCode())) {
+            log.warn("handleAppException:: {}", e.getErrorMessage());
+            return ApiResponse.error(HttpStatus.UNAUTHORIZED, e.getErrorMessage());
+        }
+
         log.error("handleAppException::", e);
         return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, e.getErrorMessage());
     }
@@ -29,6 +35,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
         log.error("handleException::", e);
         return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
+    private boolean isUnauthenticatedError(String errorCode) {
+        return errorCode.startsWith("AUTH_") && !errorCode.equals(AuthError.FORBIDDEN.getErrorCode());
     }
 
 }
