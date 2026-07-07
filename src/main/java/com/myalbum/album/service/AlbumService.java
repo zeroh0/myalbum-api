@@ -2,6 +2,7 @@ package com.myalbum.album.service;
 
 import com.myalbum.album.controller.dto.SaveAlbumRequest;
 import com.myalbum.album.entity.Album;
+import com.myalbum.album.enums.AlbumStatus;
 import com.myalbum.album.exception.AlbumError;
 import com.myalbum.album.repository.AlbumRepository;
 import com.myalbum.album.service.dto.AlbumListResponse;
@@ -11,6 +12,9 @@ import com.myalbum.album.service.dto.SaveAlbumResponse;
 import com.myalbum.common.error.exception.AppException;
 import com.myalbum.common.storage.entity.UploadFile;
 import com.myalbum.common.storage.repository.UploadRepository;
+import com.myalbum.member.entity.Member;
+import com.myalbum.member.exception.MemberError;
+import com.myalbum.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +29,7 @@ public class AlbumService {
 
     private final UploadRepository uploadRepository;
     private final AlbumRepository albumRepository;
+    private final MemberRepository memberRepository;
 
     /**
      * 사용자 앨범 목록 조회
@@ -35,6 +40,28 @@ public class AlbumService {
     @Transactional(readOnly = true)
     public List<AlbumListResponse> getAlbumList(Long memberId) {
         List<Album> albums = albumRepository.findByMemberId(memberId).orElse(Collections.emptyList());
+
+        return AlbumListResponse.fromAlbumEntity(albums);
+    }
+
+    /**
+     * 사용자핸들 기준 앨범 목록 조회 (공개 프로필)
+     *
+     * @param username       사용자핸들
+     * @param includePrivate 비공개 앨범도 포함할지 여부 (본인 조회 시 true)
+     * @return 앨범 목록
+     */
+    @Transactional(readOnly = true)
+    public List<AlbumListResponse> getAlbumListByUsername(String username, boolean includePrivate) {
+        Member member = memberRepository.findByUsername(username)
+                .orElseThrow(() -> AppException.exception(MemberError.MEMBER_NOT_FOUND));
+
+        List<Album> albums = albumRepository.findByMemberId(member.getId()).orElse(Collections.emptyList());
+        if (!includePrivate) {
+            albums = albums.stream()
+                    .filter(album -> album.getStatus() == AlbumStatus.PUBLIC)
+                    .toList();
+        }
 
         return AlbumListResponse.fromAlbumEntity(albums);
     }

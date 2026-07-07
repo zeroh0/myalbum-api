@@ -41,4 +41,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      */
     Optional<Member> findByProviderAndProviderId(String provider, String providerId);
 
+    /**
+     * 사용자핸들로 회원 조회
+     *
+     * @param username 사용자핸들
+     * @return 회원
+     */
+    Optional<Member> findByUsername(String username);
+
 }

@@ -37,6 +37,27 @@ public class AlbumController {
     }
 
     /**
+     * 사용자핸들 기준 앨범 목록 조회 (공개, 인증 불필요)
+     * 본인이 조회하는 경우에만 비공개 앨범도 함께 조회된다.
+     *
+     * @param username         사용자핸들
+     * @param principalDetails 인증된 사용자 정보 (없을 수 있음)
+     * @return 앨범 목록
+     */
+    @GetMapping("/list/{username}")
+    public ResponseEntity<ApiResponse<List<AlbumListResponse>>> getAlbumListByUsername(
+            @PathVariable String username,
+            @AuthenticationPrincipal final PrincipalDetails principalDetails
+    ) {
+        boolean isOwner = principalDetails != null
+                && username.equals(principalDetails.getMember().getUsername());
+
+        List<AlbumListResponse> albumList = albumService.getAlbumListByUsername(username, isOwner);
+
+        return ApiResponse.ok(albumList);
+    }
+
+    /**
      * 사용자 앨범 저장
      *
      * @param saveAlbumRequest 앨범 저장 요청 정보

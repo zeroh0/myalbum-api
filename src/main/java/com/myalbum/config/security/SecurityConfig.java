@@ -75,6 +75,7 @@ public class SecurityConfig {
             "/api/member/signup",
             "/api/member/login",
             "/api/auth/refresh",
+            "/api/album/list/*",
             "/login/oauth2/code/**",
             "/oauth-test.html",
             "/signup/onboarding.html",
