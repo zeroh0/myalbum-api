@@ -6,7 +6,8 @@ import lombok.Getter;
 @Getter
 public enum AlbumError implements AppError {
     ALBUM_NOT_FOUND("ALBUM_0001", "album.not.found"),
-    UPLOAD_FILE_NOT_FOUND("ALBUM_0002", "upload.file.not.found");
+    UPLOAD_FILE_NOT_FOUND("ALBUM_0002", "upload.file.not.found"),
+    PHOTO_NOT_FOUND("ALBUM_0003", "photo.not.found");
 
     private final String errorCode;
     private final String errorKey;

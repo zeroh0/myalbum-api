@@ -27,11 +27,11 @@ public class Photo {
     private Long id;
 
     @Size(max = 100)
-    @Column(name = "title", nullable = false, length = 100)
+    @Column(name = "title", length = 100)
     private String title;
 
     @Size(max = 500)
-    @Column(name = "description", nullable = false, length = 500)
+    @Column(name = "description", length = 500)
     private String description;
 
     @NotNull
@@ -40,12 +40,10 @@ public class Photo {
     private Integer displayOrder;
 
     @CreationTimestamp
-    @NotNull
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @NotNull
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
@@ -54,8 +52,16 @@ public class Photo {
     private Long albumId;
 
     @OneToOne
-    @JoinColumn(name = "image_id")
-    private UploadFile uploadFile;
+    @JoinColumn(name = "thumbnail_id", nullable = false)
+    private UploadFile thumbnailUploadFile;
+
+    @OneToOne
+    @JoinColumn(name = "image_id", nullable = false)
+    private UploadFile originUploadFile;
+
+    public void updateDisplayOrder(int displayOrder) {
+        this.displayOrder = displayOrder;
+    }
 
 }
 
