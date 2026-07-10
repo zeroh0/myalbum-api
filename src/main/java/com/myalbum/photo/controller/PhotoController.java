@@ -5,6 +5,7 @@ import com.myalbum.config.security.domain.PrincipalDetails;
 import com.myalbum.photo.controller.dto.ReorderPhotosRequest;
 import com.myalbum.photo.service.PhotoService;
 import com.myalbum.photo.service.dto.AlbumPhotoListResponse;
+import com.myalbum.photo.service.dto.PhotoListResponse;
 import com.myalbum.photo.service.dto.SavePhotoRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,18 @@ import java.util.List;
 public class PhotoController {
 
     private final PhotoService photoService;
+
+    /**
+     * 메인 페이지 사진 목록 조회
+     *
+     * @return 랜덤 사진 목록
+     */
+    @GetMapping("/main")
+    public ResponseEntity<ApiResponse<List<PhotoListResponse>>> getRandomPhotoList() {
+        List<PhotoListResponse> response = photoService.getMainPhotoList();
+
+        return ApiResponse.ok(response);
+    }
 
     /**
      * 앨범과 사진 목록 조회 (공개 프로필, 인증 불필요)

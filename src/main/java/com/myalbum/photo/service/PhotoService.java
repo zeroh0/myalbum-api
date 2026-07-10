@@ -34,6 +34,19 @@ public class PhotoService {
     private final UploadRepository uploadRepository;
 
     /**
+     * 메인 페이지 사진 목록 조회
+     *
+     * @return 사진 목록
+     */
+    public List<PhotoListResponse> getMainPhotoList() {
+        // FIXME: 현재는 가장 최근에 등록된 사진 100개를 가져오도록 구현되어 있음. 추후 랜덤으로 가져오도록 변경 필요
+        int maxPhotos = 100;
+        List<Photo> photoList = photoRepository.findAllOrderByCreatedAtDesc(maxPhotos);
+
+        return PhotoListResponse.fromPhotoEntities(photoList);
+    }
+
+    /**
      * 앨범과 사진 목록 조회 (공개 프로필)
      * PUBLIC 앨범은 누구나, PRIVATE 앨범은 소유자만 조회 가능
      *

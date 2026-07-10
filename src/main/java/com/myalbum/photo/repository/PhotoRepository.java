@@ -26,4 +26,7 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
     @Query("SELECT COALESCE(MAX(p.displayOrder), 0) FROM Photo p WHERE p.albumId = :albumId")
     int findMaxDisplayOrderByAlbumId(@Param("albumId") Long albumId);
 
+    @Query("SELECT p FROM Photo p ORDER BY p.createdAt DESC LIMIT :count")
+    List<Photo> findAllOrderByCreatedAtDesc(@Param("count") int count);
+
 }
