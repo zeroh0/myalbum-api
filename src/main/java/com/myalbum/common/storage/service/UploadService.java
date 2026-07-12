@@ -40,11 +40,47 @@ public class UploadService {
      * @return 업로드된 파일 정보
      */
     public UploadFile saveFile(MultipartFile file) {
-        // 파일 물리적 저장
-        UploadFile uploadFile = fileStorage.storeFile(file);
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+            String originalFilename = file.getOriginalFilename();
 
-        // 파일 정보 DB 저장
-        return uploadRepository.save(uploadFile);
+            // HEIF 변환 여부 확인
+            boolean isHeif = heifConversionService.isHeif(originalFilename);
+
+            // HEIF 파일인 경우 JPG로 변환 후 업로드
+            Path convertPath = isHeif
+                    ? convertHeifToJpgPath(file)
+                    : null;
+            byte[] uploadFileBytes = isHeif
+                    ? Files.readAllBytes(convertPath)
+                    : file.getBytes();
+
+            // 확장자 추출
+            String fileExtension = isHeif
+                    ? extractExtension(convertPath.getFileName().toString())
+                    : extractExtension(originalFilename);
+
+            // 저장 시 파일명 결정 (HEIF 변환 시 변환된 파일명 사용, 그렇지 않으면 원본 파일명 사용)
+            String saveFileName = isHeif
+                    ? convertPath.getFileName().toString()
+                    : originalFilename;
+
+            Thumbnails.of(new ByteArrayInputStream(uploadFileBytes))
+                    .scale(0.4)
+                    .outputQuality(0.5)
+                    .outputFormat(fileExtension)
+                    .toOutputStream(output);
+            byte[] thumbnailBytes = output.toByteArray();
+
+            // 파일 물리적 저장
+            UploadFile uploadFile = fileStorage.storeFile(thumbnailBytes, saveFileName);
+
+            // 파일 정보 DB 저장
+            return uploadRepository.save(uploadFile);
+        } catch (IOException e) {
+            AppException.exception(StorageError.FAILED_STORE_FILE);
+        }
+
+        return null;
     }
 
     /**
