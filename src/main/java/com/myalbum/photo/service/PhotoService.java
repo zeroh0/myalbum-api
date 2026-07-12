@@ -60,7 +60,7 @@ public class PhotoService {
                 .orElseThrow(() -> AppException.exception(AlbumError.ALBUM_NOT_FOUND));
 
         // 소유자 여부 확인
-        boolean isOwner = album.getMemberId().equals(viewerMemberId);
+        boolean isOwner = album.getMember().getId().equals(viewerMemberId);
         if (album.getStatus() != AlbumStatus.PUBLIC && !isOwner) {
             throw AppException.exception(AlbumError.ALBUM_NOT_FOUND);
         }
@@ -133,7 +133,7 @@ public class PhotoService {
         Album album = albumRepository.findByIdAndMemberId(photo.getAlbumId(), memberId)
                 .orElseThrow(() -> AppException.exception(AlbumError.ALBUM_NOT_FOUND));
 
-        if (!album.getMemberId().equals(memberId)) {
+        if (!album.getMember().getId().equals(memberId)) {
             throw AppException.exception(AlbumError.ALBUM_NOT_FOUND);
         }
 

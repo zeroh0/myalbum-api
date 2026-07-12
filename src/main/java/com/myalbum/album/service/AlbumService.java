@@ -74,6 +74,9 @@ public class AlbumService {
      * @return 저장된 앨범 정보
      */
     public SaveAlbumResponse saveAlbum(SaveAlbumRequest saveAlbumRequest, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> AppException.exception(MemberError.MEMBER_NOT_FOUND));
+
         // 업로드된 파일 가져오기
         Long imageId;
         imageId = saveAlbumRequest.getSaveUploadFileRequest().getId();
@@ -91,7 +94,7 @@ public class AlbumService {
                 .title(saveAlbumRequest.getTitle())
                 .description(saveAlbumRequest.getDescription())
                 .uploadFile(uploadFile)
-                .memberId(memberId)
+                .member(member)
                 .build();
 
         Album album = SaveAlbumRequestServiceDto.toAlbumEntity(saveAlbumRequestServiceDto);
@@ -111,7 +114,7 @@ public class AlbumService {
                 .orElseThrow(() -> AppException.exception(AlbumError.ALBUM_NOT_FOUND));
 
         // 앨범 소유자 확인
-        if (!album.getMemberId().equals(memberId)) {
+        if (!album.getMember().getId().equals(memberId)) {
             throw AppException.exception(AlbumError.ALBUM_NOT_FOUND);
         }
 
@@ -132,7 +135,7 @@ public class AlbumService {
                 .orElseThrow(() -> AppException.exception(AlbumError.ALBUM_NOT_FOUND));
 
         // 앨범 소유자 확인
-        if (!album.getMemberId().equals(memberId)) {
+        if (!album.getMember().getId().equals(memberId)) {
             throw AppException.exception(AlbumError.ALBUM_NOT_FOUND);
         }
 

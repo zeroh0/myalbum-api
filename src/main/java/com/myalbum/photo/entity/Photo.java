@@ -1,5 +1,6 @@
 package com.myalbum.photo.entity;
 
+import com.myalbum.album.entity.Album;
 import com.myalbum.common.storage.entity.UploadFile;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -50,6 +51,10 @@ public class Photo {
     @NotNull
     @Column(name = "album_id", nullable = false)
     private Long albumId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "album_id", insertable = false, updatable = false)
+    private Album album;
 
     @OneToOne
     @JoinColumn(name = "thumbnail_id", nullable = false)

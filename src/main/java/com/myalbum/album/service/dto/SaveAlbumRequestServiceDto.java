@@ -3,6 +3,7 @@ package com.myalbum.album.service.dto;
 import com.myalbum.album.entity.Album;
 import com.myalbum.album.enums.AlbumStatus;
 import com.myalbum.common.storage.entity.UploadFile;
+import com.myalbum.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class SaveAlbumRequestServiceDto {
 
     private AlbumStatus status;
 
-    private Long memberId;
+    private Member member;
 
     public static Album toAlbumEntity(SaveAlbumRequestServiceDto saveAlbumRequestServiceDto) {
         return Album.builder()
@@ -28,7 +29,7 @@ public class SaveAlbumRequestServiceDto {
                 .description(saveAlbumRequestServiceDto.getDescription())
                 .uploadFile(saveAlbumRequestServiceDto.getUploadFile())
                 .status(AlbumStatus.PUBLIC)
-                .memberId(saveAlbumRequestServiceDto.getMemberId())
+                .member(saveAlbumRequestServiceDto.getMember())
                 .build();
     }
 

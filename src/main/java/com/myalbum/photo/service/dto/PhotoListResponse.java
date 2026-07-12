@@ -20,6 +20,8 @@ public class PhotoListResponse {
 
     private Integer displayOrder;
 
+    private AlbumOwnerResponse albumOwner;
+
     private UploadFile thumbnailUploadFile;
 
     private UploadFile originUploadFile;
@@ -28,15 +30,24 @@ public class PhotoListResponse {
 
     public static List<PhotoListResponse> fromPhotoEntities(List<Photo> photos) {
         return photos.stream()
-                .map(photo -> PhotoListResponse.builder()
-                        .id(photo.getId())
-                        .title(photo.getTitle())
-                        .description(photo.getDescription())
-                        .displayOrder(photo.getDisplayOrder())
-                        .thumbnailUploadFile(photo.getThumbnailUploadFile())
-                        .originUploadFile(photo.getOriginUploadFile())
-                        .createdAt(photo.getCreatedAt())
-                        .build())
+                .map(photo -> {
+                    AlbumOwnerResponse albumOwnerResponse = AlbumOwnerResponse.builder()
+                            .username(photo.getAlbum().getMember().getUsername())
+                            .albumId(photo.getAlbum().getId().toString())
+                            .albumName(photo.getAlbum().getTitle())
+                            .build();
+
+                    return PhotoListResponse.builder()
+                            .id(photo.getId())
+                            .title(photo.getTitle())
+                            .description(photo.getDescription())
+                            .displayOrder(photo.getDisplayOrder())
+                            .albumOwner(albumOwnerResponse)
+                            .thumbnailUploadFile(photo.getThumbnailUploadFile())
+                            .originUploadFile(photo.getOriginUploadFile())
+                            .createdAt(photo.getCreatedAt())
+                            .build();
+                })
                 .toList();
     }
 

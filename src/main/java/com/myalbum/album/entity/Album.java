@@ -2,6 +2,7 @@ package com.myalbum.album.entity;
 
 import com.myalbum.album.enums.AlbumStatus;
 import com.myalbum.common.storage.entity.UploadFile;
+import com.myalbum.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,8 +28,9 @@ public class Album {
     @Column(comment = "pk", nullable = false, columnDefinition = "BIGINT")
     private Long id;
 
-    @Column(comment = "회원 ID", nullable = false, columnDefinition = "BIGINT")
-    private Long memberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     @Column(comment = "앨범 제목", nullable = false, columnDefinition = "VARCHAR(255)")
     private String title;
