@@ -63,11 +63,16 @@ public class LocalFileStorage implements FileStorage {
 
             String url = this.rootLocation.relativize(destinationFile).toString();
 
-            // 이미지 차원 추출 (width, height)
-            ImageDimensionExtractor.ImageDimension dimension = ImageDimensionExtractor.extract(file);
 
-            // 사진의 메타 데이터 추출 (카메라 모델, 렌즈 모델, ISO, 조리개, 셔터 속도, 촬영일)
-            ExifExtractor.PhotoExifInfo exifInfo = ExifExtractor.extract(file);
+            ImageDimensionExtractor.ImageDimension dimension = null;
+            ExifExtractor.PhotoExifInfo exifInfo = null;
+            if (!extension.equalsIgnoreCase("heic") && !extension.equalsIgnoreCase("heif")) {
+                // 이미지 차원 추출 (width, height)
+                dimension = ImageDimensionExtractor.extract(file);
+
+                // 사진의 메타 데이터 추출 (카메라 모델, 렌즈 모델, ISO, 조리개, 셔터 속도, 촬영일)
+                exifInfo = ExifExtractor.extract(file);
+            }
 
             return UploadFile.builder()
                     .url(url)
@@ -75,14 +80,14 @@ public class LocalFileStorage implements FileStorage {
                     .saveFileName(storedFilename)
                     .extension(extension)
                     .size(file.getSize())
-                    .width(dimension.width())
-                    .height(dimension.height())
-                    .cameraModel(exifInfo.cameraModel())
-                    .lensModel(exifInfo.lensModel())
-                    .iso(exifInfo.iso())
-                    .aperture(exifInfo.aperture())
-                    .shutterSpeed(exifInfo.shutterSpeed())
-                    .takenAt(exifInfo.takenAt())
+                    .width(dimension != null ? dimension.width() : null)
+                    .height(dimension != null ? dimension.height() : null)
+                    .cameraModel(exifInfo != null ? exifInfo.cameraModel() : null)
+                    .lensModel(exifInfo != null ? exifInfo.lensModel() : null)
+                    .iso(exifInfo != null ? exifInfo.iso() : null)
+                    .aperture(exifInfo != null ? exifInfo.aperture() : null)
+                    .shutterSpeed(exifInfo != null ? exifInfo.shutterSpeed() : null)
+                    .takenAt(exifInfo != null ? exifInfo.takenAt() : null)
                     .status(UploadFileStatus.UPLOADED)
                     .build();
         } catch (Exception exception) {
@@ -119,11 +124,15 @@ public class LocalFileStorage implements FileStorage {
 
             String url = this.rootLocation.relativize(destinationFile).toString();
 
-            // 이미지 차원 추출 (width, height)
-            ImageDimensionExtractor.ImageDimension dimension = ImageDimensionExtractor.extract(fileBytes);
+            ImageDimensionExtractor.ImageDimension dimension = null;
+            ExifExtractor.PhotoExifInfo exifInfo = null;
+            if (!extension.equalsIgnoreCase("heic") && !extension.equalsIgnoreCase("heif")) {
+                // 이미지 차원 추출 (width, height)
+                dimension = ImageDimensionExtractor.extract(fileBytes);
 
-            // 사진의 메타 데이터 추출 (카메라 모델, 렌즈 모델, ISO, 조리개, 셔터 속도, 촬영일)
-            ExifExtractor.PhotoExifInfo exifInfo = ExifExtractor.extract(fileBytes);
+                // 사진의 메타 데이터 추출 (카메라 모델, 렌즈 모델, ISO, 조리개, 셔터 속도, 촬영일)
+                exifInfo = ExifExtractor.extract(fileBytes);
+            }
 
             return UploadFile.builder()
                     .url(url)
@@ -131,14 +140,14 @@ public class LocalFileStorage implements FileStorage {
                     .saveFileName(storedFilename)
                     .extension(extension)
                     .size((long) fileBytes.length)
-                    .width(dimension.width())
-                    .height(dimension.height())
-                    .cameraModel(exifInfo.cameraModel())
-                    .lensModel(exifInfo.lensModel())
-                    .iso(exifInfo.iso())
-                    .aperture(exifInfo.aperture())
-                    .shutterSpeed(exifInfo.shutterSpeed())
-                    .takenAt(exifInfo.takenAt())
+                    .width(dimension != null ? dimension.width() : null)
+                    .height(dimension != null ? dimension.height() : null)
+                    .cameraModel(exifInfo != null ? exifInfo.cameraModel() : null)
+                    .lensModel(exifInfo != null ? exifInfo.lensModel() : null)
+                    .iso(exifInfo != null ? exifInfo.iso() : null)
+                    .aperture(exifInfo != null ? exifInfo.aperture() : null)
+                    .shutterSpeed(exifInfo != null ? exifInfo.shutterSpeed() : null)
+                    .takenAt(exifInfo != null ? exifInfo.takenAt() : null)
                     .status(UploadFileStatus.UPLOADED)
                     .build();
         } catch (Exception exception) {

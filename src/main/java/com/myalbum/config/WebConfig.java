@@ -1,6 +1,6 @@
 package com.myalbum.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -10,14 +10,14 @@ import java.nio.file.Path;
 
 @Profile("local")
 @Configuration
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${file.storage.location}")
-    private String uploadPath;
+    private final UploadProperties uploadProperties;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String location = "file:" + Path.of(uploadPath).toAbsolutePath().toString();
+        String location = "file:" + Path.of(uploadProperties.getUploadPath()).toAbsolutePath().toString();
 
         registry.addResourceHandler("/resource/**")
                 .addResourceLocations(location);

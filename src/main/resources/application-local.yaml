@@ -20,3 +20,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+
+heif:
+  convert:
+    path: /opt/homebrew/bin/heif-convert
+    temp-dir: ${user.home}/desktop/current_project/myalbum-api/uploads/tmp
