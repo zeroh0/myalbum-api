@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local, oauth2, jwt
+    include: oauth2, jwt
 
   messages:
     encoding: utf-8
