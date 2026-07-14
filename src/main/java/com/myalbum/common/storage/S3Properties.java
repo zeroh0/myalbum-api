@@ -1,0 +1,16 @@
+package com.myalbum.common.storage;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+@Getter
+@Setter
+@ConfigurationProperties(prefix = "file.storage.s3")
+public class S3Properties {
+
+    private String bucket;
+
+    private String region;
+
+}

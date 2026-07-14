@@ -8,7 +8,6 @@ import com.myalbum.common.storage.exception.StorageError;
 import com.myalbum.common.storage.repository.UploadRepository;
 import com.myalbum.common.storage.service.dto.ImageUploadResponse;
 import com.myalbum.common.storage.service.dto.PhotoResponse;
-import com.myalbum.config.UploadProperties;
 import lombok.RequiredArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,6 @@ public class UploadService {
     private final FileStorage fileStorage;
     private final HeifConversionService heifConversionService;
     private final UploadRepository uploadRepository;
-    private final UploadProperties uploadProperties;
 
     /**
      * 파일 저장
@@ -202,9 +200,7 @@ public class UploadService {
      * @throws IOException 파일 변환 중 오류 발생 시
      */
     private Path convertHeifToJpgPath(MultipartFile file) throws IOException {
-        UploadFile uploadFile = fileStorage.storeFile(file);
-
-        return heifConversionService.convertToJpg(Path.of(uploadProperties.getUploadPath(), uploadFile.getUrl()));
+        return heifConversionService.convertToJpg(file);
     }
 
 }

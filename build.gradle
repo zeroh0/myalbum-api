@@ -33,6 +33,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     implementation 'net.coobird:thumbnailator:0.4.21'
     implementation 'com.drewnoakes:metadata-extractor:2.20.0'
+    implementation 'software.amazon.awssdk:s3:2.47.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
     compileOnly 'org.projectlombok:lombok'

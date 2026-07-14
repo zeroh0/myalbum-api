@@ -5,11 +5,15 @@ import com.myalbum.common.error.exception.AppException;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -43,6 +47,24 @@ public class HeifConversionService {
     public boolean isHeif(String filename) {
         String ext = getExtension(filename).toLowerCase();
         return HEIF_EXTENSIONS.contains(ext);
+    }
+
+    /**
+     * 업로드된 HEIF 파일을 임시 디렉토리에 내려받은 뒤 JPG로 변환
+     * (저장소 종류(로컬/S3)와 무관하게 항상 로컬 임시 파일을 거쳐 변환)
+     *
+     * @param file 업로드된 HEIF 파일
+     * @return 변환된 JPG 파일의 경로
+     */
+    public Path convertToJpg(MultipartFile file) throws IOException {
+        String extension = getExtension(file.getOriginalFilename());
+        Path originPath = Path.of(heifConvertProperties.getTempDirPath(), "origin-" + UUID.randomUUID() + "." + extension);
+        try (InputStream inputStream = file.getInputStream()) {
+            Files.copy(inputStream, originPath, StandardCopyOption.REPLACE_EXISTING);
+            return convertToJpg(originPath);
+        } finally {
+            Files.deleteIfExists(originPath);
+        }
     }
 
     /**

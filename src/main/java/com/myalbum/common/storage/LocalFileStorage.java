@@ -4,6 +4,7 @@ import com.myalbum.common.error.exception.AppException;
 import com.myalbum.common.storage.entity.UploadFile;
 import com.myalbum.common.storage.enums.UploadFileStatus;
 import com.myalbum.common.storage.exception.StorageError;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +17,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Profile("local")
 @Service
 public class LocalFileStorage implements FileStorage {
 
