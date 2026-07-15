@@ -15,7 +15,7 @@ public class RefreshTokenCookieManager {
         return ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .path("/")
                 .maxAge(jwtTokenProvider.getRefreshTokenExpiration() / 1000)
                 .build();
