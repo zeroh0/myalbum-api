@@ -13,7 +13,7 @@ cp "$JAR_FILE" deploy-package/application.jar
 cp -r .platform deploy-package/
 
 cd deploy-package
-zip -r ../deploy.zip . -x ".*"
+zip -r ../deploy.zip .
 cd ..
 
 echo "3. EB 배포 중..."
