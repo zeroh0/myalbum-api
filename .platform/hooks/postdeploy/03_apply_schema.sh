@@ -11,6 +11,10 @@ if [ "$TABLE_EXISTS" == "" ]; then
     unzip -p "$JAR_PATH" "BOOT-INF/classes/sql/DDL.sql" > "$TEMP_SQL"
     sudo -u postgres psql -d myalbum -f "$TEMP_SQL"
 
+    echo "테이블 권한을 zeroh0 계정에 부여합니다."
+    sudo -u postgres psql -d myalbum -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO zeroh0;"
+    sudo -u postgres psql -d myalbum -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO zeroh0;"
+
     rm -f "$TEMP_SQL"
 else
     echo "테이블이 이미 존재하여 건너뜁니다."
