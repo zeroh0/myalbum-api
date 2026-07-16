@@ -4,7 +4,6 @@ import com.myalbum.common.error.exception.AppException;
 import com.myalbum.common.storage.entity.UploadFile;
 import com.myalbum.common.storage.enums.UploadFileStatus;
 import com.myalbum.common.storage.exception.StorageError;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,20 +12,39 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Profile("prod")
 @Service
-@RequiredArgsConstructor
 public class S3FileStorage implements FileStorage {
 
+    private final Path rootLocation;
     private final S3Client s3Client;
     private final S3Properties s3Properties;
+    private final FileStorageProperties fileStorageProperties;
+
+    public S3FileStorage(S3Client s3Client, S3Properties s3Properties, FileStorageProperties fileStorageProperties) {
+        this.s3Client = s3Client;
+        this.s3Properties = s3Properties;
+        this.fileStorageProperties = fileStorageProperties;
+        this.rootLocation = Path.of(fileStorageProperties.getLocation());
+        init();
+    }
 
     @Override
     public void init() {
-        // S3 버킷은 사전에 프로비저닝되어 있다고 가정하므로 별도 초기화가 필요 없음
+        String location = fileStorageProperties.getLocation();
+        String key = location.endsWith("/") ? location : location + "/";
+
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(s3Properties.getBucket())
+                .key(key)
+                .contentLength(0L)
+                .build();
+
+        s3Client.putObject(request, RequestBody.empty());
     }
 
     @Override
@@ -56,16 +74,17 @@ public class S3FileStorage implements FileStorage {
 
             // 오늘 날짜 기준으로 키 생성
             String key = LocalDate.now() + "/" + storedFilename;
+            Path storagePath = this.rootLocation.resolve(key);
 
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(s3Properties.getBucket())
-                    .key(key)
+                    .key(storagePath.toString())
                     .contentType(resolveContentType(extension))
                     .build();
 
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(fileBytes));
 
-            String url = buildPublicUrl(key);
+//            String url = buildPublicUrl(key);
 
             ImageDimensionExtractor.ImageDimension dimension = null;
             ExifExtractor.PhotoExifInfo exifInfo = null;
@@ -78,7 +97,7 @@ public class S3FileStorage implements FileStorage {
             }
 
             return UploadFile.builder()
-                    .url(url)
+                    .url(key)
                     .originFileName(originalFilename)
                     .saveFileName(storedFilename)
                     .extension(extension)
