@@ -62,15 +62,8 @@ public class UploadService {
                     ? convertPath.getFileName().toString()
                     : originalFilename;
 
-            Thumbnails.of(new ByteArrayInputStream(uploadFileBytes))
-                    .scale(0.4)
-                    .outputQuality(0.5)
-                    .outputFormat(fileExtension)
-                    .toOutputStream(output);
-            byte[] thumbnailBytes = output.toByteArray();
-
             // 파일 물리적 저장
-            UploadFile uploadFile = fileStorage.storeFile(thumbnailBytes, saveFileName);
+            UploadFile uploadFile = fileStorage.storeFile(uploadFileBytes, saveFileName);
 
             // 파일 정보 DB 저장
             return uploadRepository.save(uploadFile);
